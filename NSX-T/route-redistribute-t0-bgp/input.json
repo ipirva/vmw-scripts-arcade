@@ -1,0 +1,65 @@
+{
+    "title": "NSX-T BGP Redistribute Route",
+    "description": "Configure BGP Route Redistribution",
+    "author": "ipirva@vmware.com",
+    "template": "https://github.com/ipirva/vmw-scripts-arcade/",
+    "folder": "NSX-T/route-redistribute-t0-bgp",
+    "runner": "hashicorp/terraform:1.0.5",
+    "type": "terraform",
+    "tags": [],
+    "variables": [
+      {
+        "name": "TF_VAR_nsxt_manager_vip",
+        "description": "NSX-T Manager VIP",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_username",
+        "description": "NSX-T Manager Username",
+        "type": "INPUT",
+        "default": "admin",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_password",
+        "description": "NSX-T Manager Password",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_bgp_enabled",
+        "description": "BGP Enabled",
+        "type": "BOOLEAN",
+        "default": "true",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_nsxt_route_type",
+        "description": "NSX-T Route Type to Redistribute",
+        "type": "INPUT",
+        "default": "TIER1_CONNECTED, TIER1_STATIC",
+        "required": true
+      }
+    ],
+    "actions": [
+      {
+        "name": "INIT",
+        "command": "init -no-color -force-copy -get=true"
+      },
+      {
+        "name": "PLAN",
+        "command": "plan -detailed-exitcode -no-color"
+      },
+      {
+        "name": "APPLY",
+        "command": "apply -no-color -auto-approve"
+      },
+      {
+        "name": "DESTROY",
+        "command": "destroy -auto-approve -no-color"
+      }
+    ]
+  }

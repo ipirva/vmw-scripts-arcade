@@ -1,0 +1,163 @@
+{
+    "title": "NSX-T Configure BGP Neighbor",
+    "description": "Configure BGP Neighbor on an NSX-T Tier-0 Gateway",
+    "author": "ipirva@vmware.com",
+    "template": "https://github.com/ipirva/vmw-scripts-arcade/",
+    "folder": "NSX-T/create-bgp-session",
+    "runner": "hashicorp/terraform:1.0.5",
+    "type": "terraform",
+    "tags": [],
+    "variables": [
+      {
+        "name": "TF_VAR_nsxt_manager_vip",
+        "description": "NSX-T Manager VIP",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_username",
+        "description": "NSX-T Manager Username",
+        "type": "INPUT",
+        "default": "admin",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_password",
+        "description": "NSX-T Manager Password",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_bgp_allow_as_in",
+        "description": "BGP Allow AS In",
+        "type": "BOOLEAN",
+        "default": "false",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_bgp_graceful_restart_mode",
+        "description": "BGP Graceful Restart Mode",
+        "type": "INPUT",
+        "default": "HELPER_ONLY",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_bgp_hold_down_time",
+        "description": "BGP Neighbor Hold Down Time",
+        "type": "INPUT",
+        "default": "180",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_bgp_keep_alive_time",
+        "description": "BGP Neighbor Keep Alive Time",
+        "type": "INPUT",
+        "default": "60",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_bgp_remote_as_num",
+        "description": "Remote BGP AS Number",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_bgp_maximum_hop_limit",
+        "description": "BGP Neighbor Maximum Hop Limit",
+        "type": "INPUT",
+        "default": "1",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_bgp_neighbor_type",
+        "description": "Remote BGP Neighbor Type: IPV4 or IPV6?",
+        "type": "INPUT",
+        "default": "IPV4",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_bgp_neighbor_address",
+        "description": "Remote BGP Neighbor Address",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_bgp_neighbor_in_prefixlist",
+        "description": "BGP Neighbor IN Prefix-list",
+        "type": "INPUT",
+        "default": "",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_bgp_neighbor_out_prefixlist",
+        "description": "BGP Neighbor OUT Prefix-list",
+        "type": "INPUT",
+        "default": "",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_bgp_neighbor_password",
+        "description": "Remote BGP Neighbor Password",
+        "type": "INPUT",
+        "default": "",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_bgp_bfd_enabled",
+        "description": "BGP BFD Enabled",
+        "type": "BOOLEAN",
+        "default": "true",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_bgp_bfd_interval",
+        "description": "BGP BFD Interval",
+        "type": "INPUT",
+        "default": "500",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_bgp_bfd_multiple",
+        "description": "BGP BFD Multiple",
+        "type": "INPUT",
+        "default": "3",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_nsxt_tier0_name",
+        "description": "NSX-T Tier0 GW Name",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_tag",
+        "description": "NSX-T Tier0 GW BGP Neighbor Tag",
+        "type": "INPUT",
+        "default": "CreatedBy=ScriptsArcade, Author=IPIRVA",
+        "required": false
+      }
+    ],
+    "actions": [
+      {
+        "name": "INIT",
+        "command": "init -no-color -force-copy -get=true"
+      },
+      {
+        "name": "PLAN",
+        "command": "plan -detailed-exitcode -no-color"
+      },
+      {
+        "name": "APPLY",
+        "command": "apply -no-color -auto-approve"
+      },
+      {
+        "name": "DESTROY",
+        "command": "destroy -auto-approve -no-color"
+      }
+    ]
+  }

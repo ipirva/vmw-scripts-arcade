@@ -1,0 +1,117 @@
+{
+    "title": "NSX-T Configure BGP",
+    "description": "Configure BGP on an NSX-T Cluster",
+    "author": "ipirva@vmware.com",
+    "template": "https://github.com/ipirva/vmw-scripts-arcade/",
+    "folder": "NSX-T/configure-bgp",
+    "runner": "hashicorp/terraform:1.0.5",
+    "type": "terraform",
+    "tags": [],
+    "variables": [
+      {
+        "name": "TF_VAR_nsxt_manager_vip",
+        "description": "NSX-T Manager VIP",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_username",
+        "description": "NSX-T Manager Username",
+        "type": "INPUT",
+        "default": "admin",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_password",
+        "description": "NSX-T Manager Password",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_bgp_enabled",
+        "description": "BGP Enabled",
+        "type": "BOOLEAN",
+        "default": "true",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_bgp_inter_sr_ibgp",
+        "description": "Inter SR iBGP",
+        "type": "BOOLEAN",
+        "default": "true",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_bgp_local_as_num",
+        "description": "Local BGP AS Number",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_bgp_graceful_restart_mode",
+        "description": "BGP Graceful Restart Mode",
+        "type": "INPUT",
+        "default": "HELPER_ONLY",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_bgp_graceful_restart_timer",
+        "description": "BGP Graceful Restart Timer",
+        "type": "INPUT",
+        "default": "180",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_bgp_graceful_restart_stale_route_timer",
+        "description": "BGP Graceful Restart Stale Route Timer",
+        "type": "INPUT",
+        "default": "600",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_bgp_ecmp",
+        "description": "BGP ECMP",
+        "type": "BOOLEAN",
+        "default": "true",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_bgp_multipath_relax",
+        "description": "BGP Multipath Relax",
+        "type": "BOOLEAN",
+        "default": "true",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_nsxt_tier0_name",
+        "description": "NSX-T Tier0 GW Name",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_tag",
+        "description": "NSX-T Tier0 GW BGP Configuration Tag",
+        "type": "INPUT",
+        "default": "CreatedBy=ScriptsArcade, Author=IPIRVA",
+        "required": false
+      }
+    ],
+    "actions": [
+      {
+        "name": "INIT",
+        "command": "init -no-color -force-copy -get=true"
+      },
+      {
+        "name": "PLAN",
+        "command": "plan -detailed-exitcode -no-color"
+      },
+      {
+        "name": "APPLY",
+        "command": "apply -no-color -auto-approve"
+      }
+    ]
+  }
