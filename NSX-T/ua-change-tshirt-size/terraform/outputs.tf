@@ -1,10 +1,6 @@
-output "nsxt_manager_vm_a" {  
-    description = "NSX-T Manager VM Name - 1st VM"  
-    value       = local.local_nsxt_manager_map
-}
-output "nsxt_manager_vm_b_c" {  
-    description = "NSX-T Manager VM Name - 2nd and 3rd if deployed"  
-    value       = "${null_resource.nsxt_manager_vms.*.triggers}"
+output "nsxt_manager_vm_details" {  
+    description = "NSX-T Manager VM Details"  
+    value       = null_resource.nsxt_manager_vms
 }
 output "nsxt_manager_vm_deployment_size" {  
     description = "NSX-T Manager T-Shirt Size"  
@@ -25,7 +21,7 @@ output "nsxt_manager_vm_audit_password" {
     value       = var.nsxt_manager_vm_audit_password
     sensitive = true
 }
-output "vsphere_esxi_hosts" {  
-    description = "vSphere ESXi Hosts"  
-    value       = var.vsphere_esxi_hosts
+output "vm_name_2_vsphere_host" {
+    description = "NSX-T Manager VM 2 vSphere ESXi host mapping"
+    value = local.local_vm_name_vsphere_host
 }

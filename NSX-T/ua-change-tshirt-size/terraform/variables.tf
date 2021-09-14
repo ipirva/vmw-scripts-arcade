@@ -50,19 +50,16 @@ variable "vsphere_compute_cluster" {
   }
 }
 variable "vsphere_host" {
-    type = string
-    description = "vSphere Compute Host"
-
+  type = string
+  description = "vSphere Host to Deploy NSX-T Manger VM on"
+  # its size is the same as nsxt_manager_vm_name, nsxt_manager_vm_hostname ...
+  # eg esx01.cpod-go.az-fkd.cloud-garage.net or
+  # esx01.cpod-go.az-fkd.cloud-garage.net, esx02.cpod-go.az-fkd.cloud-garage.net or
+  # esx01.cpod-go.az-fkd.cloud-garage.net, esx02.cpod-go.az-fkd.cloud-garage.net, esx03.cpod-go.az-fkd.cloud-garage.net
   validation {
-    condition     = trimspace(var.vsphere_host) != ""
-    error_message = "The value for vSphere Compute Host cannot be empty."
+    condition = can(regex("^([0-9A-Za-z_\\-\\.])+|(,([[:blank:]])?([0-9A-Za-z_\\-\\.])+){0,2}$",trimspace(var.vsphere_host)))
+    error_message = "Must specify 1, 2 or 3 vSphere VM names for the NSX-T Manager VM(s)."
   }
-}
-# when the target NSX-T cluster has 3 VMs, we need 2 more vSphere ESXi hosts
-variable "vsphere_extra_host" {
-    type = string
-    description = "vSphere Compute Host"
-    default = ""
 }
 variable "vsphere_folder" {
     type = string
@@ -94,32 +91,28 @@ variable "vsphere_network_dvs" {
 }
 # variables related to nsxt manager vm appliance
 variable "nsxt_manager_vm_name" {
-  type        = string # eg mynsxtmanager-a.mydomain.io
-  description = "NSX-T Manager VM vSphere Name"
+  # eg with or without domain name
+  # mynsxtmanager-a.mydomain.io or 
+  # mynsxtmanager-a.mydomain.io, mynsxtmanager-b.mydomain.io or
+  # mynsxtmanager-a.mydomain.io, mynsxtmanager-b.mydomain.io, mynsxtmanager-c.mydomain.io
+  type        = string 
+  description = "NSX-T Manager VM Name in vSphere"
   
   validation {
-    condition = can(regex("^([0-9A-Za-z_\\-\\.])+$",trimspace(var.nsxt_manager_vm_name)))
-    error_message = "The value of NSX-T Manager VM name is incorrectly formatted."
+    condition = can(regex("^([0-9A-Za-z_\\-\\.])+|(,([[:blank:]])?([0-9A-Za-z_\\-\\.])+){0,2}$",trimspace(var.nsxt_manager_vm_name)))
+    error_message = "Must specify 1, 2 or 3 vSphere VM names for the NSX-T Manager VM(s)."
   }
 }
 variable "nsxt_manager_vm_hostname" {
-  type        = string # eg mynsxtmanager-a.mydomain.io
+  # eg mynsxtmanager-a.mydomain.io or 
+  # mynsxtmanager-a.mydomain.io, mynsxtmanager-b.mydomain.io or
+  # mynsxtmanager-a.mydomain.io, mynsxtmanager-b.mydomain.io, mynsxtmanager-c.mydomain.io
+  type        = string
   description = "NSX-T Manager VM Hostname"
 
   validation {
-    condition = can(regex("^([0-9A-Za-z_\\-\\.])+$",trimspace(var.nsxt_manager_vm_hostname)))
-    error_message = "Must specify 1 DNS hostname for the extra NSX-T Manager VM nsxt-a."
-  }
-}
-# when the target NSX-T cluster has 3 VMs, we need 2 more hostnames
-variable "nsxt_manager_vm_extra_hostname" {
-  type        = string # eg mynsxtmanager-b.mydomain.io, mynsxtmanager-c.mydomain.io
-  description = "NSX-T Manager VM Hostname"
-  default = ""
-
-  validation {
-    condition = can(regex("^(|([0-9A-Za-z_\\-\\.])+((,)[[:blank:]]?)([0-9A-Za-z_\\-\\.])+)$",trimspace(var.nsxt_manager_vm_extra_hostname)))
-    error_message = "Must specify either nothing, or 2 DNS hostnames, one for each extra NSX-T Manager VM nsxt-b and nsxt-c."
+    condition = can(regex("^([0-9A-Za-z_\\-\\.])+|(,([[:blank:]])?([0-9A-Za-z_\\-\\.])+){0,2}$",trimspace(var.nsxt_manager_vm_hostname)))
+    error_message = "Must specify 1, 2 or 3 DNS hostname(s) for the NSX-T Manager VM(s)."
   }
 }
 variable "nsxt_manager_vm_deployment_size" {
@@ -217,25 +210,16 @@ variable "nsxt_manager_vm_audit_password" {
   }
 }
 variable "nsxt_manager_vm_ipv4_prefix" {
-  type        = string # eg 172.17.23.10/24
-  description = "NSX-T Manager VM IPv4 Prefix"
+  # eg 172.17.23.10/24 or
+  #172.17.23.10/24, 172.17.23.11/24 or
+  #172.17.23.10/24, 172.17.23.11/24, 172.17.23.12/24
+  type        = string 
+  description = "NSX-T Manager VM(s) IPv4 Prefix(es)"
 
   validation {
-    condition     = can(regex("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/([1-9]|[1-2][0-9]|3[0-1])$", trimspace(var.nsxt_manager_vm_ipv4_prefix)))
-    error_message = "The value for NSX-T Manager VM interface IP must be an IPv4 prefix."
+    condition     = can(regex("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/([1-9]|[1-2][0-9]|3[0-1])(,[[:blank:]]?(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/([1-9]|[1-2][0-9]|3[0-1])){0,2}$", trimspace(var.nsxt_manager_vm_ipv4_prefix)))
+    error_message = "The value for NSX-T Manager VM(s) interface(s) IP has an incorrect format."
   } 
-}
-# when the target NSX-T cluster has 3 VMs, we need 2 more IPv4 prefixes for the two VMs interfaces
-# a list of 2 IPv4 or empty
-variable "nsxt_manager_vm_ipv4_extra_prefix" {
-  type        = string # eg 172.17.23.10/24, 172.17.23.11/24
-  description = "NSX-T Manager VM IPv4 Prefixes"
-  default = ""
-
-  validation {
-    condition     = can(regex("^(|((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/([1-9]|[1-2][0-9]|3[0-1]))((,){0,1}([[:blank:]]){0,1}((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/([1-9]|[1-2][0-9]|3[0-1])){0,1}){0,1})$", trimspace(var.nsxt_manager_vm_ipv4_extra_prefix)))
-    error_message = "The value for NSX-T Manager VM Extra IPv4 must be empty or a comma separated list of two IPv4 addresses."
-  }
 }
 # the NSX-T Manager VMs are on the same IPv4 subnet
 variable "nsxt_manager_vm_ipv4_gateway" {
@@ -273,15 +257,4 @@ variable "nsxt_manager_vm_ntp_serverlist" {
     condition     = can(regex("^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))([[:blank:]](?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){0,}$",trimspace(var.nsxt_manager_vm_ntp_serverlist)))
     error_message = "The value for NTP server list must be set in order to deploy the NSX-T Manager VM."
   }
-}
-# variable defined by API call
-# a script uses API call to populate the value of vsphere_esxi_hosts in an .auto.tfvars file
-variable "vsphere_esxi_hosts" {
-  type = map
-  description = "The vSphere ESXi hosts and hosts ID."
-
-  default = {
-      "esx01.cpod-go.az-fkd.cloud-garage.net" = "host1",
-      "esx02.cpod-go.az-fkd.cloud-garage.net" = "host2"
-      }
 }
