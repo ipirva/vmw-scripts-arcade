@@ -1,11 +1,12 @@
 # NSX UA Manager - Change T-shirt Size
 
 We want to automate the change of the t-shirt size of an existing NSX-T Manager (GM or LM) UA cluster.
-The end result will be a new NSX-T Manager cluster with its VMs appliances with the new size. The new NSX-T Manager cluster (target) will replace the existing one (source). The target cluster will synchronize its data from the source cluster. The source cluster will be deleted and the source NSX-T Manager VMs will be shut down.
+The end result will be a new NSX-T Manager cluster with its VMs appliances with the new size. The new NSX-T Manager cluster (target) will replace the existing one (source). The target cluster will synchronize its data from the source cluster. The source cluster will be broken/disabled and the source NSX-T Manager VMs will be shut down.
+
 [NSX Manager VM Resource Requirements](https://docs.vmware.com/en/VMware-NSX-T-Data-Center/3.1/installation/GUID-AECA2EE0-90FC-48C4-8EDB-66517ACFE415.html)
 
 The supported target NSX-T cluster can have 1, 2 or 3 VMs appliances.
-The target NSX-T Manager VM appliances will be deployed on the specified vCenter(s).
+The target NSX-T Manager VM appliances will be deployed on the specified vCenter and ESXi hosts.
 
 ## Prerequisites
 
