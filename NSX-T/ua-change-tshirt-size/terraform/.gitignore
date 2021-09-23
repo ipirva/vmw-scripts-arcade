@@ -1,3 +1,5 @@
+# .init file ignore
+.init
 # .env file ignore
 .env
 # tmp folder ignore

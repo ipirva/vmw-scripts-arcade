@@ -1,3 +1,7 @@
+# .init file ignore
+.init
+# openapi_bindings folder ignore
+**/openapi_bindings/*
 # .env file ignore
 .env
 # tmp folder ignore
