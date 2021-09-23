@@ -1,3 +1,5 @@
+# nsx_api.json ignore
+nsx_api.json
 # .init file ignore
 .init
 # openapi_bindings folder ignore
