@@ -17,6 +17,7 @@ import swagger_client.configuration
 import swagger_client.rest
 import swagger_client.api_client
 from swagger_client.api.system_administration_configuration_nsx_managers_clusters_cluster_status_api import SystemAdministrationConfigurationNSXManagersClustersClusterStatusApi
+from swagger_client.api.system_administration_lifecycle_management_backup_restore_management_backup_api import SystemAdministrationLifecycleManagementBackupRestoreManagementBackupApi
 
 def f_check_nsx_cluster_status(nsxClusterIP: str = None, nsxClusterUser: str = None, nsxClusterPass: str = None) -> dict:
     '''
@@ -114,7 +115,53 @@ def f_check_nsx_cluster_status(nsxClusterIP: str = None, nsxClusterUser: str = N
     
     return output
 
+def f_check_nsx_backup_status(nsxClusterIP: str = None, nsxClusterUser: str = None, nsxClusterPass: str = None) -> dict:
+    '''
+        Return NSX backup status
+    '''
 
+    # Configure HTTP basic authorization: BasicAuth
+    configuration = swagger_client.Configuration()
+    configuration.host = f"https://{nsxClusterIP}/api/v1"
+    configuration.username = nsxClusterUser
+    configuration.password = nsxClusterPass
+    configuration.verify_ssl = False
+
+    # create an instance of the API class
+    APIInstance = swagger_client.SystemAdministrationLifecycleManagementBackupRestoreManagementBackupApi(swagger_client.ApiClient(configuration))
+    try:
+        # GET '/backups/config'
+        nsxBackupStatus = APIInstance.get_backup_config_with_http_info()
+        nsxBackupStatusHTTPCode = nsxBackupStatus[1]
+        nsxBackupStatusOutput = nsxBackupStatus[0]
+    except Exception as e:
+        print(f"ERROR while trying to GET NSX backup status: {str(e)}")
+        return None
+    else:
+        print(nsxBackupStatusOutput)
+    
+    if nsxBackupStatusHTTPCode == 200:
+        print(f"SUCCESS NSX API GET backup status returned HTTP code: {str(nsxBackupStatusHTTPCode)}")
+    else:
+        print(f"ERROR NSX API GET backup status returned HTTP code: {str(nsxBackupStatusHTTPCode)}")
+        return None
+
+    nsxBackupEnabled = None
+
+    try:
+        # nsx backup enabled True or False
+        nsxBackupEnabled = nsxBackupStatusOutput.backup_enabled
+    except  Exception as e:
+        print(f"ERROR NSX API GET backup status processing failed: {str(e)}")
+        return None
+    else:
+        print(f"SUCCESS NSX API GET backup status returned: {str(nsxBackupEnabled)}")
+        if nsxBackupEnabled is True:
+            print(f"SUCCESS NSX Cluster backup is enabled")
+        if nsxBackupStatus is False:
+            print(f"SUCCESS NSX Cluster backup is NOT enabled")
+    
+    return nsxBackupEnabled
 
 
 

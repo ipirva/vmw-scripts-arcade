@@ -1,0 +1,13 @@
+({'after_inventory_update_interval': None,
+ 'backup_enabled': True,
+ 'backup_schedule': {'resource_type': 'IntervalBackupSchedule'},
+ 'inventory_summary_interval': 240,
+ 'passphrase': None,
+ 'remote_file_server': {'directory_path': '/home/nsxbackup',
+                        'port': 22,
+                        'protocol': {'authentication_scheme': {'password': None,
+                                                               'scheme_name': 'PASSWORD',
+                                                               'username': 'nsxbackup'},
+                                     'protocol_name': 'sftp',
+                                     'ssh_fingerprint': 'SHA256:z2hZGw6JBvZxV/1aIN6BhWFNmo2ZZvHD5hJLF2XTSV0'},
+                        'server': '172.17.23.1'}}, 200, HTTPHeaderDict({'Set-Cookie': 'JSESSIONID=82CFA322A2FA5446C6702AC714C95D26; Path=/; Secure; HttpOnly', 'X-NSX-REQUESTID': '4c1079db-b0b2-4c70-8ea3-4041a0f705a7', 'Cache-Control': 'no-cache, no-store, max-age=0, must-revalidate', 'Pragma': 'no-cache', 'Expires': '0', 'X-XSS-Protection': '1; mode=block', 'X-Content-Type-Options': 'nosniff', 'Date': 'Thu, 23 Sep 2021 23:08:10 GMT', 'Keep-Alive': 'timeout=60', 'Strict-Transport-Security': 'max-age=31536000 ; includeSubDomains', 'X-Frame-Options': 'SAMEORIGIN', 'vary': 'accept-encoding', 'Content-Type': 'application/json', 'Transfer-Encoding': 'chunked', 'Server': 'NSX'}))

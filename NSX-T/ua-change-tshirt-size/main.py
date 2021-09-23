@@ -7,7 +7,7 @@ workflow manager in python
 import argparse, os, sys, subprocess
 from pprint import pprint
 
-from python.functions.nsx import f_check_nsx_cluster_status
+from python.functions.nsx import f_check_nsx_cluster_status, f_check_nsx_backup_status
 from python.functions.vc import f_check_vc_reachability
 from python.functions.variables import f_check_env_variables
 from python.functions.init import f_terraform_init, f_python_init
@@ -44,11 +44,11 @@ if __name__ == "__main__":
     parser.add_argument("--action", default=None, type=str, choices=["Python_INIT", "Terraform_INIT", "CHECK", "PLAN_NEW_NSX_VM", "DEPLOY_NEW_NSX_VM", "DESTROY_NEW_NSX_VM", "REPLACE_NSX_CLUSTER"], help='''\
         Python_INIT: Downloads the NSX OpenAPI schema from the existing NSX cluster; Generates NSX API Python bindings. No changes are made on the infrastructure!
         Terraform_INIT: "terraform init". No changes are made on the infrastructure!
-        CHECK: Checks VC connectivity and authentication; Checks the NSX Manager cluster status. No changes are made on the infrastructure!
+        CHECK: Checks VC connectivity and authentication; Checks the NSX Manager cluster status; Checks if NSX Backup is configured and healthy. No changes are made on the infrastructure!
         PLAN_NEW_NSX_VM: Plans the new NSX Manager VM(s) deployment. The planning is done using Terraform (plan), run Terraform_INIT before. No changes are made on the infrastructure!
         DEPLOY_NEW_NSX_VM: Deploys the new NSX Manager VM(s). The deployment is done using Terraform (apply), run Terraform_INIT before. Changes are made on the infrastructure!
         DESTROY_NEW_NSX_VM: Destroys the newly created NSX Manager VM(s). The action is done using Terraform (destroy), run Terraform_INIT before. The action is not available after a successful REPLACE_NSX_CLUSTER action. Changes are made on the infrastructure!
-        REPLACE_NSX_CLUSTER: Replaces the VMs of the current NSX Manager cluster with the newly deployed NSX Manager VM(s). The old NSX Manager VMs are taken out of the NSX Manager cluster and shut down. Changes are made on the infrastructure!
+        REPLACE_NSX_CLUSTER: Does a complete backup of the NSX; Replaces the VMs of the current NSX Manager cluster with the newly deployed NSX Manager VM(s). The old NSX Manager VMs are taken out of the NSX Manager cluster and shut down. Changes are made on the infrastructure!
     ''')
     args = parser.parse_args(args=None if sys.argv[1:] else ['--help'])
 
@@ -68,9 +68,12 @@ if __name__ == "__main__":
 
     # requires Python_INIT
     if args.action == "CHECK":
-        print("Check NSX\n")
+        print("Check NSX Manager cluster status\n")
         # functions/nsx.py
         print(f_check_nsx_cluster_status(nsxClusterIP = nsxClusterIP, nsxClusterUser = nsxClusterUser, nsxClusterPass = nsxClusterPass))
+        print("Check NSX Backup status\n")
+        # functions/nsx.py
+        print(f_check_nsx_backup_status(nsxClusterIP = nsxClusterIP, nsxClusterUser = nsxClusterUser, nsxClusterPass = nsxClusterPass))
         print("Check vCenter\n")
         # functions/vc.py
         print(f_check_vc_reachability(vcIP = vcIP, vcUser = vcUser, vcPass = vcPass))
@@ -78,19 +81,27 @@ if __name__ == "__main__":
     # functions/deploy.py
     # requires Terraform_INIT
     if args.action == "PLAN_NEW_NSX_VM":
+        print("Terraform plan\n")
         print(f_terraform_plan_vms())
 
     # functions/deploy.py
     # requires Terraform_INIT
     if args.action == "DEPLOY_NEW_NSX_VM":
+        print("Terraform apply\n")
         print(f_terraform_apply_vms())
     
     # functions/deploy.py
     # requires Terraform_INIT
     if args.action == "DESTROY_NEW_NSX_VM":
-        print(f_terraform_destroy_vms())
+        # check if the new NSX Manager VMs are in the cluster; they must not be
+        # destroy the new NSX Manager VMs
+        print("Terraform destroy\n")
+        print(f_terraform_destroy_vms(nsxClusterIP = nsxClusterIP, nsxClusterUser = nsxClusterUser, nsxClusterPass = nsxClusterPass))
 
     # functions/replace.py
     # requires Python_INIT
     if args.action == "REPLACE_NSX_CLUSTER":
+        # do a complete NSX backup
+        # do the replace
+        # shut down old NSX Manager VMs
         print(args.action)
