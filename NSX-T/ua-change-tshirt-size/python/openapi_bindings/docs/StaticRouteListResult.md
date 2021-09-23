@@ -1,0 +1,9 @@
+# StaticRouteListResult
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**results** | [**list[StaticRoute]**](StaticRoute.md) | Paginated list of static routes | 
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
