@@ -44,7 +44,7 @@ ENV PATH "${PATH}:${JAVA_HOME}/bin"
 ENV PYTHONPATH "${PYTHONPATH}:/root/.local/lib/python3.9/site-packages/"
 
 RUN ln -s /usr/local/bin/python3 /usr/bin/python3
-RUN apk add --update --no-cache bash curl jq openjdk11
+RUN apk add --update --no-cache bash curl jq openjdk11 openssl
 COPY --from=BUILDER /usr/bin/terraform /usr/bin/terraform
 COPY --from=BUILDER /usr/bin/swagger-codegen-cli.jar /usr/bin/swagger-codegen-cli.jar
 COPY --from=BUILDER /opt/venv /opt/venv

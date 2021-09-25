@@ -1,0 +1,282 @@
+{
+    "title": "NSX-T Manager Change VM T-Shirt Size",
+    "description": "Change the t-shirt size of the NSX Manager VMs",
+    "author": "ipirva@vmware.com",
+    "template": "https://github.com/ipirva/vmw-scripts-arcade/",
+    "folder": "NSX-T/ua-change-tshirt-size",
+    "runner": "ipirva/runner:latest",
+    "type": "python",
+    "tags": [],
+    "variables": [
+      {
+        "name": "TF_VAR_vsphere_server",
+        "description": "vSphere IP or DNS",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_vsphere_server_username",
+        "description": "vSphere Server Username",
+        "type": "INPUT",
+        "default": "Administrator@vsphere.local",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_vsphere_server_passwor",
+        "description": "vSphere Server Password",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_vsphere_server_allow_unverified_ssl",
+        "description": "vSphere Server Allow Unverified SSL",
+        "type": "BOOLEAN",
+        "default": "true",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_vsphere_dc",
+        "description": "vSphere Data Center",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_vsphere_ds",
+        "description": "vSphere Datastore",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_vsphere_compute_cluster",
+        "description": "vSphere Compute Cluster",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_bgp_remote_as_num",
+        "description": "Remote BGP AS Number",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_bgp_maximum_hop_limit",
+        "description": "BGP Neighbor Maximum Hop Limit",
+        "type": "INPUT",
+        "default": "1",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_vsphere_host",
+        "description": "vSphere Host to Deploy NSX-T Manger VM on",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_vsphere_folder",
+        "description": "vSphere Folder",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_vsphere_vm_network",
+        "description": "vSphere Network Used for NSX Manager VM Network1 Interface",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_bgp_neighbor_out_prefixlist",
+        "description": "BGP Neighbor OUT Prefix-list",
+        "type": "INPUT",
+        "default": "",
+        "required": false
+      },
+      {
+        "name": "TF_VAR_vsphere_network_dvs",
+        "description": "vSphere Network DVS Name",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager",
+        "description": "NSX-T Managet VIP or DNS",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_vm_hostname",
+        "description": "NSX-T Manager VM Name in vSphere",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_vm_deployment_size",
+        "description": "The deployment size of the NSX-T Manager Appliance. The default is \"medium\"",
+        "type": "INPUT",
+        "default": "medium",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_vm_cpu_count_override",
+        "description": "The number of CPUs the NSX-T Manager VM should have. Defaults to 0 which uses the CPU count of the deployment selected.",
+        "type": "INPUT",
+        "default": "0",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_vm_memory_override",
+        "description": "The ammount of memory the NSX-T Manager VM should have. Defaults to 0 which uses the memory size of the deployment selected.",
+        "type": "INPUT",
+        "default": "0",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_ova_remote_path",
+        "description": "NSX-T Manager VM OVA Remote Path HTTP/HTTPS",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_vsphere_ova_allow_unverified_ssl",
+        "description": "OVA Remote Path Allow Unverified SSL",
+        "type": "BOOLEAN",
+        "default": "true",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_vm_enable_ssh",
+        "description": "Enable SSH be enabled to the NSX-T Manager VM Appliance?",
+        "type": "BOOLEAN",
+        "default": "true",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_vm_admin_username",
+        "description": "NSX-T Manager VM Admin Username. Default is \"admin\".",
+        "type": "INPUT",
+        "default": "admin",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_vm_audit_username",
+        "description": "NSX-T Manager VM Audit Username. Default is \"audit\".",
+        "type": "INPUT",
+        "default": "audit",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_vm_root_password",
+        "description": "NSX-T Manager VM root user Password",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_vm_admin_password",
+        "description": "NSX-T Manager VM admin user Password",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_vm_audit_password",
+        "description": "NSX-T Manager VM audit user Password",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_vm_ipv4_prefix",
+        "description": "NSX-T Manager VM(s) IPv4 Prefix(es)",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_vm_ipv4_gateway",
+        "description": "NSX-T Manager VM Gateway IPv4",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_vm_ipv4_netmask",
+        "description": "NSX-T Manager VM IPv4 Netmask",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_vm_dns_serverlist",
+        "description": "DNS Server List for the NSX-T Manager VM",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_vm_ntp_serverlist",
+        "description": "NTP Server List for the NSX-T Manager VM",
+        "type": "INPUT",
+        "default": "",
+        "required": true
+      }
+    ],
+    "actions": [
+      {
+        "name": "HELP",
+        "command": "./main.py --help"
+      },
+      {
+        "name": "Python_INIT",
+        "command": "./main.py --action Python_INIT"
+      },
+      {
+        "name": "Terraform_INIT",
+        "command": "./main.py --action Terraform_INIT"
+      },
+      {
+        "name": "CHECK",
+        "command": "./main.py --action CHECK"
+      },
+      {
+        "name": "NSX_CLUSTER_STATUS",
+        "command": "./main.py --action NSX_CLUSTER_STATUS"
+      },
+      {
+        "name": "PLAN_NEW_NSX_VM",
+        "command": "./main.py --action PLAN_NEW_NSX_VM"
+      },
+      {
+        "name": "DEPLOY_NEW_NSX_VM",
+        "command": "./main.py --action DEPLOY_NEW_NSX_VM"
+      },
+      {
+        "name": "DESTROY_NEW_NSX_VM",
+        "command": "./main.py --action DESTROY_NEW_NSX_VM"
+      },
+      {
+        "name": "ADD_NEW_NSX_VM_TO_CLUSTER",
+        "command": "./main.py --action ADD_NEW_NSX_VM_TO_CLUSTER"
+      },
+      {
+        "name": "REMOVE_NEW_NSX_VM_FROM_CLUSTER",
+        "command": "./main.py --action REMOVE_NEW_NSX_VM_FROM_CLUSTER"
+      },
+      {
+        "name": "REMOVE_OLD_NSX_VM_FROM_CLUSTER",
+        "command": "./main.py --action REMOVE_OLD_NSX_VM_FROM_CLUSTER"
+      }
+    ]
+  }

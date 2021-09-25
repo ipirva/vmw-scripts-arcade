@@ -1,13 +1,16 @@
 # Variables
+# VCSA server IP or hostname
 variable "vsphere_server" {
     type = string
     description = "vSphere IP or DNS"
 }
+# VCSA username
 variable "vsphere_server_username" {
     type = string
     description = "vSphere Server Username"
     default = "Administrator@vsphere.local"
 }
+# VCSA password
 variable "vsphere_server_password" {
     type = string
     description = "vSphere Server Password"
@@ -49,6 +52,7 @@ variable "vsphere_compute_cluster" {
     error_message = "The value for vSphere Compute Cluster cannot be empty."
   }
 }
+# for each new NSX Manager VM specify on which ESXi host it will be installed
 variable "vsphere_host" {
   type = string
   description = "vSphere Host to Deploy NSX-T Manger VM on"
@@ -73,7 +77,7 @@ variable "vsphere_resource_pool" {
 }
 variable "vsphere_vm_network" {
     type = string
-    description = "vSphere Network Used for VM Network1 Interface"
+    description = "vSphere Network Used for NSX Manager VM Network1 Interface"
 
   validation {
     condition     = can(regex("^([0-9A-Za-z_\\-\\.])+$",trimspace(var.vsphere_vm_network)))

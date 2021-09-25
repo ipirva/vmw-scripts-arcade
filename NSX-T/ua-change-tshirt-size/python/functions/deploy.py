@@ -39,10 +39,6 @@ def f_terraform_plan_vms() -> str:
     
     output = cmdRun.poll()
     outputReturnCode = cmdRun.returncode
-    if outputReturnCode != 0:
-        print(f"ERROR while running plan command: {command}")
-    else:
-        print(f"SUCCESS while running plan command: {command}")
     
     return output
 
@@ -58,7 +54,7 @@ def f_terraform_apply_vms() -> str:
         print(f"ERROR Dir {terraformDir} does not exist.")
         return None
 
-    cmdTerraformAPPLY = "terraform apply -no-color -auto-approve"
+    cmdTerraformAPPLY = "terraform apply -no-color -auto-approve && terraform apply -no-color -auto-approve -refresh-only"
     command = f"echo chdir to {terraformDir} && cd {terraformDir} && echo Running the command: {cmdTerraformAPPLY} && {cmdTerraformAPPLY}"
 
     try:
@@ -127,13 +123,12 @@ def f_terraform_destroy_vms(nsxClusterIP: str = None, nsxClusterUser: str = None
         print(f"ERROR while trying to get NSX Cluster members and Cluster ID: {str(e)}")
         return None
     else:
-        for k, v in nsxClusterStatusControlMembers.items():
-            memberHostname = v["member_fqdn"]
-            memberIPv4 = v["member_ip"]
-            lookForMember = (memberIPv4, memberHostname)
+        for item in nsxClusterStatusControlMembers:
+            # (memberIPv4, memberHostname)
+            lookForMember = item
             if lookForMember in nsxManagerVMs:
                 print(f"ERROR cannot destroy the newly created NSX Manager VMs. The NSX Manager VM {str(lookForMember)} is part of the NSX Manager Cluster ID {str(nsxClusterStatusClusterID)}")
-                print(f"INFO NSX Manager Cluster {str(nsxClusterStatus)}")
+                pprint(f"INFO NSX Manager Cluster {str(nsxClusterStatus)}")
                 return None
 
     # at this point there is no new NSX Manager VM in the NSX Manager Cluster

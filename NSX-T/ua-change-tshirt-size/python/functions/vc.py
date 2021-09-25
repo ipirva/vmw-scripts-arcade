@@ -29,6 +29,8 @@ def f_check_vc_reachability(vcIP: str = None, vcUser: str = None, vcPass: str = 
 		f"{cmdGetVCCluster}"
 		)
 
+	print("Check vCenter: GET '/rest/vcenter/cluster'\n")
+
 	try:
 		cmdRun = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 	except Exception as e:
