@@ -31,9 +31,9 @@ The target NSX-T Manager VM appliances will be deployed on the specified vCenter
 
 ## Run example
 
-'''bash
+```bash
  docker run -it --network host --env-file=terraform/tf_vars.env -v `pwd`:/workspace -w /workspace ipirva/runner ./main.py --help
-'''
+```
 
 ## Contributing
 
