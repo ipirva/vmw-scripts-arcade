@@ -357,10 +357,11 @@ def f_add_vm_nsx_cluster(nsxNewVMIP: str = None, nsxClusterIP: str = None, nsxCl
 
     return f_check_nsx_cluster_status(nsxClusterIP=nsxClusterIP, nsxClusterUser=nsxClusterUser, nsxClusterPass=nsxClusterPass)
 
-def f_remove_vm_nsx_cluster(nsxVMIP: list = None, nsxNewVM: list = None, nsxClusterIP: str = None, nsxClusterUser: str = None, nsxClusterPass: str = None) -> dict:
+def f_remove_vm_nsx_cluster(nsxVMIP: list = None, nsxNewVM: list = None, nsxKeepVM: list = None, nsxClusterIP: str = None, nsxClusterUser: str = None, nsxClusterPass: str = None) -> dict:
     '''
         Remove NSX Manager VM from cluster
-        nsxVMIP = [(IP, HOSTNAME), ]
+        nsxVMIP, nsxNewVM = [(IP, HOSTNAME), ]
+
         nsxVMIP = specific IP -> remove that specific NSX VM
             - this is done without checking that NSX Cluster overall status be STABLE
         nsxVMIP = None -> remove the old NSX Manager VMs and keep the newly deployed ones
@@ -388,12 +389,14 @@ def f_remove_vm_nsx_cluster(nsxVMIP: list = None, nsxNewVM: list = None, nsxClus
     nsxVMUUID2IP = dict()
 
     # remove the new NSX VMs
+    # keep the VMs from nsxKeepVM
     if nsxVMIP is not None:
         nsxVMUUID2Remove = list()
         nsxNewVMIPList = set()
         try:
             for item in nsxVMIP:
                 a, b = item
+                # keep the IP
                 nsxNewVMIPList.add(a)
 
             for item in nsxClusterMembers:
@@ -410,6 +413,8 @@ def f_remove_vm_nsx_cluster(nsxVMIP: list = None, nsxNewVM: list = None, nsxClus
     if nsxVMIP is None:
         nsxVMUUID2Remove = list()
         nsxNewVMIPList = set()
+        
+        nsxKeepVMIPList = set()
         # move forward only if the cluster status is STABLE
         if nsxClusterStatusOverall != "STABLE":
             print(f"ERROR NSX Manager cluster ID {nsxClusterID} overall status must be STABLE, and not {nsxClusterStatusOverall}")
@@ -420,11 +425,18 @@ def f_remove_vm_nsx_cluster(nsxVMIP: list = None, nsxNewVM: list = None, nsxClus
         try:
             for item in nsxNewVM:
                 a, b = item
+                # keep the IP
                 nsxNewVMIPList.add(a)
+
+            if nsxKeepVM is not None:
+                for item in nsxKeepVM:
+                    a, b = item
+                    # keep the IP
+                    nsxKeepVMIPList.add(a)
 
             for item in nsxClusterMembers:
                 nsxVMIPv4Val, nsxVMHostnameVal, nsxVMUUIDVal = item
-                if nsxVMIPv4Val not in nsxNewVMIPList:
+                if nsxVMIPv4Val not in nsxNewVMIPList and nsxVMIPv4Val not in nsxKeepVMIPList:
                     nsxVMUUID2Remove.append(nsxVMUUIDVal)
                     nsxVMUUID2IP[nsxVMUUIDVal] = nsxVMIPv4Val
         except Exception as e:

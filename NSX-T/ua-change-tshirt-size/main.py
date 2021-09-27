@@ -24,7 +24,7 @@ def f_create_env_file():
     try:
         # set extra env variables
         with open(f"{pythonDir}/.env", "w") as envFile:
-            envFile.write(f"pythonDir={myDir}/python\n")
+            envFile.write(f"pythonDir={pythonDir}\n")
             envFile.write(f"terraformDir={myDir}/terraform\n")
             envFile.write(f"nsxOpenAPIBindingDir={pythonDir}/openapi_bindings\n")
     except Exception as e:
@@ -65,6 +65,7 @@ if __name__ == "__main__":
 
     # [(nsxNewVMIPv4, nswNewVMHostname)]
     nsxNewManagerVMs = list()
+
     try:        
         nsxManagerVMIPv4Raw = f_check_env_variables(var = ["TF_VAR_nsxt_manager_vm_ipv4_prefix"])["TF_VAR_nsxt_manager_vm_ipv4_prefix"]
         nsxManagerVMHostnameRaw = f_check_env_variables(var = ["TF_VAR_nsxt_manager_vm_hostname"])["TF_VAR_nsxt_manager_vm_hostname"]
@@ -78,6 +79,19 @@ if __name__ == "__main__":
         print(f"ERROR cannot obtain the IPv4 of the new NSX Manager VMs. Make sure you have specify their IPv4 addresses and hostnames: {str(e)}")
     else:
         print(f"New NSX Manager VMs are: {str(nsxNewManagerVMs)}")
+
+    # [(nsxKeepVMIPv4, nswKeepVMHostname)]
+    nsxKeepManagerVMs = list()
+
+    try:
+        nsxClusterVMIPv4KeepRaw = f_check_env_variables(var = ["TF_VAR_nsxt_manager_keep_vm_ipv4"])["TF_VAR_nsxt_manager_keep_vm_ipv4"]
+        nsxClusterVMIPv4KeepRaw = nsxClusterVMIPv4KeepRaw.split(",")
+        for i in nsxClusterVMIPv4KeepRaw:
+            nsxKeepManagerVMs.append((i.split("/")[0].strip(), ""))
+    except Exception as e:
+        print(f"ERROR cannot obtain the IPv4 of the NSX Manager VMs to keep. Make sure you have specify their IPv4 addresses or leave it empty if none mus be kept: {str(e)}")
+    else:
+        print(f"The NSX Manager VMs to keep in the cluster are: {str(nsxKeepManagerVMs)}")
 
     # functions/init.py
     if args.action == "Python_INIT":
@@ -150,7 +164,7 @@ if __name__ == "__main__":
         # nsxNewManagerVMs = [("172.17.23.123", "nsx-t-a.test.io"), ]
         if len(nsxNewManagerVMs) > 0:
             print(f"Remove the following VMs from NSX Manager Cluster: {str(nsxNewManagerVMs)}")
-            pprint(f_remove_vm_nsx_cluster(nsxVMIP = nsxNewManagerVMs, nsxNewVM = None, nsxClusterIP = nsxClusterIP, nsxClusterUser = nsxClusterUser, nsxClusterPass = nsxClusterPass))
+            pprint(f_remove_vm_nsx_cluster(nsxVMIP = nsxNewManagerVMs, nsxNewVM = None, nsxKeepVM = None, nsxClusterIP = nsxClusterIP, nsxClusterUser = nsxClusterUser, nsxClusterPass = nsxClusterPass))
         else:
             print(f"ERROR cannot obtain the IPv4 of the NSX Manager VMs. Make sure you have specify their IPv4 addresses and hostnames.")
 
@@ -158,4 +172,4 @@ if __name__ == "__main__":
     # requires Python_INIT
     if args.action == "REMOVE_OLD_NSX_VM_FROM_CLUSTER":
         print("Working ...\n")
-        print(f_remove_vm_nsx_cluster(nsxVMIP = None, nsxNewVM = nsxNewManagerVMs, nsxClusterIP = nsxClusterIP, nsxClusterUser = nsxClusterUser, nsxClusterPass = nsxClusterPass))
+        print(f_remove_vm_nsx_cluster(nsxVMIP = None, nsxNewVM = nsxNewManagerVMs, nsxKeepVM = nsxKeepManagerVMs, nsxClusterIP = nsxClusterIP, nsxClusterUser = nsxClusterUser, nsxClusterPass = nsxClusterPass))

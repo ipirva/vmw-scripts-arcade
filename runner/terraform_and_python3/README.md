@@ -1,7 +1,10 @@
 # Terraform and Python Runner
 
 This is a Docker image containing Terraform and Python.
-Terraform version 1.0.6 and Python version 3.9.7
+
+1. Terraform version 1.0.6
+2. Python version 3.9.7
+3. swagger-cogen 3.0.27
 
 To build this container, you may use the following command:
 

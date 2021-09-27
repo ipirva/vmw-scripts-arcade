@@ -23,7 +23,7 @@
         "required": true
       },
       {
-        "name": "TF_VAR_vsphere_server_passwor",
+        "name": "TF_VAR_vsphere_server_password",
         "description": "vSphere Server Password",
         "type": "INPUT",
         "default": "",
@@ -58,20 +58,6 @@
         "required": true
       },
       {
-        "name": "TF_VAR_bgp_remote_as_num",
-        "description": "Remote BGP AS Number",
-        "type": "INPUT",
-        "default": "",
-        "required": true
-      },
-      {
-        "name": "TF_VAR_bgp_maximum_hop_limit",
-        "description": "BGP Neighbor Maximum Hop Limit",
-        "type": "INPUT",
-        "default": "1",
-        "required": false
-      },
-      {
         "name": "TF_VAR_vsphere_host",
         "description": "vSphere Host to Deploy NSX-T Manger VM on",
         "type": "INPUT",
@@ -93,13 +79,6 @@
         "required": true
       },
       {
-        "name": "TF_VAR_bgp_neighbor_out_prefixlist",
-        "description": "BGP Neighbor OUT Prefix-list",
-        "type": "INPUT",
-        "default": "",
-        "required": false
-      },
-      {
         "name": "TF_VAR_vsphere_network_dvs",
         "description": "vSphere Network DVS Name",
         "type": "INPUT",
@@ -115,7 +94,7 @@
       },
       {
         "name": "TF_VAR_nsxt_manager_vm_hostname",
-        "description": "NSX-T Manager VM Name in vSphere",
+        "description": "NSX-T Manager New VMs Names in vSphere",
         "type": "INPUT",
         "default": "",
         "required": true
@@ -231,6 +210,13 @@
         "type": "INPUT",
         "default": "",
         "required": true
+      },
+      {
+        "name": "TF_VAR_nsxt_manager_keep_vm_hostname",
+        "description": "NSX-T Manager VMs IPv4 Mgmt to keep in the cluster. By default, all the existing will be replaced by the newly deployed.",
+        "type": "INPUT",
+        "default": "",
+        "required": false
       }
     ],
     "actions": [

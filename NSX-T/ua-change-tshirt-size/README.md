@@ -1,12 +1,12 @@
 # NSX UA Manager - Change T-shirt Size
 
-We want to automate the :change of the t-shirt size of an existing NSX-T Manager UA cluster.
-The end result will be a new NSX-T Manager cluster with its VMs appliances with the new size.
-This example can be used as well to increase the size of an existing NSX Manager cluster or to upgrade the version of the existing NSX Manager VMs by replacing the existing NSX Manager VM with newer ones.
+We want to automate the change of the t-shirt size (deployment size) of an existing NSX-T Manager UA cluster.
+The end result will be a new NSX-T Manager cluster with its VMs appliances with the new deployment size.
+This example can be used as well to add new VMs to an existing NSX Manager cluster or to replace specific existing VMs with new ones, while keeping the NSX version and NSX Manager VM deployment size.
 
 [NSX Manager VM Resource Requirements](https://docs.vmware.com/en/VMware-NSX-T-Data-Center/3.1/installation/GUID-AECA2EE0-90FC-48C4-8EDB-66517ACFE415.html)
 
-The supported target NSX-T cluster can have 1, 2 or 3 VMs appliances.
+The supported target NSX-T cluster should have 3 VMs appliances for production deployments.
 The target NSX-T Manager VM appliances will be deployed on the specified vCenter and ESXi hosts.
 
 ## Prerequisites
@@ -26,7 +26,7 @@ The target NSX-T Manager VM appliances will be deployed on the specified vCenter
 
 ## Attention
 
-1. Be careful when removing NSX Manager VM from cluster. Make sure that the NSX Manager Cluster is always in a overall STABLE state with a minimum 1 NSX Manager VM.
+1. Be careful when removing NSX Manager VMs from the NSX-T Manager cluster. Make sure that the NSX Manager Cluster is always in a overall STABLE state with a minimum 1 NSX Manager VM.
 2. Once a NSX Manager VM has been removed from cluster, it cannot be reused and it must be deleted.
 
 ## Run example
@@ -34,6 +34,10 @@ The target NSX-T Manager VM appliances will be deployed on the specified vCenter
 ```bash
  docker run -it --network host --env-file=terraform/tf_vars.env -v `pwd`:/workspace -w /workspace ipirva/runner ./main.py --help
 ```
+
+Terraform: deploy NSX Manager VM
+
+Python: OpenAPI bindings for NSX Manager API calls; VC API calls
 
 ## Contributing
 
