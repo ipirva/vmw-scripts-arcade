@@ -68,7 +68,7 @@ def f_check_nsx_nodes_status(nsxClusterIP: str = None, nsxClusterUser: str = Non
         APIInstance = swagger_client.SystemAdministrationConfigurationNSXManagersClustersClusterStatusApi(swagger_client.ApiClient(configuration))
         try:
             # GET '/cluster/nodes/{node-id}/status'
-            nsxNodeStatus[nodeUUID] = APIInstance.read_cluster_node_status_with_http_info(node_id="db1bb097-8ffd-49cc-9280-0dc46f854cd7")
+            nsxNodeStatus[nodeUUID] = APIInstance.read_cluster_node_status_with_http_info(node_id=nodeUUID)
             nsxNodeStatusHTTPCode = nsxNodeStatus[nodeUUID][1]
             nsxNodeStatusOutput = nsxNodeStatus[nodeUUID][0]
         except Exception as e:
@@ -420,7 +420,7 @@ def f_add_vm_nsx_cluster(nsxNewVMIP: str = None, nsxClusterIP: str = None, nsxCl
     whileLoopSleep = 10 # seconds
     whileLoopCounter = 0
     while True:
-        print(f"INFO Waiting for the NSX cluster overall status to transition to STABLE ...")
+        print(f"INFO Waiting for the NSX cluster overall status to transition to STABLE {whileLoopTerminate - whileLoopCounter} / {whileLoopTerminate} seconds ...")
         print(f"{str(whileLoopCounter)} seconds passed ...")
 
         try:
