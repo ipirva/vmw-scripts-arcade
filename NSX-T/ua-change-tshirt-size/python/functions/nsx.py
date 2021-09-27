@@ -13,6 +13,97 @@ from python.functions.variables import f_check_env_variables
 nsxOpenAPIBindingDir = f_check_env_variables(var = ["nsxOpenAPIBindingDir"])["nsxOpenAPIBindingDir"]
 sys.path.insert(0, nsxOpenAPIBindingDir)
 
+def f_check_nsx_nodes_status(nsxClusterIP: str = None, nsxClusterUser: str = None, nsxClusterPass: str = None, nsxClusterNodeUUID: list = None) -> dict:
+    '''
+        Return NSX Manager nodes status
+    '''
+    
+    # keep Node UUID to IP map
+    nsxNodeUUID2IP = dict()
+
+    if nsxClusterNodeUUID == None:
+        # initialize
+        nsxClusterNodeUUID = list()
+        # get out nodes UUID from cluster status
+        nsxClusterStatus = f_check_nsx_cluster_status(nsxClusterIP = nsxClusterIP, nsxClusterUser = nsxClusterUser, nsxClusterPass = nsxClusterPass)
+        try:
+            nsxClusterStatusMembers = nsxClusterStatus["control_plane_nodes"]["members"]
+            for item in nsxClusterStatusMembers:
+                ip, fqdn, uuid = item
+                nsxClusterNodeUUID.append(uuid)
+                if uuid not in nsxNodeUUID2IP.keys():
+                    nsxNodeUUID2IP[uuid] = dict()  
+                    nsxNodeUUID2IP[uuid]["IPv4"] = ip
+                    nsxNodeUUID2IP[uuid]["FQDN"] = fqdn
+        except Exception as e:
+            print(f"ERROR read NSX Manager Nodes UUID from {str(nsxClusterStatus)}: {str(e)}")
+            return None
+
+    if type(nsxClusterNodeUUID) is not list:
+        print(f"ERROR provide a list with NSX Manager Cluster Node UUID to check. E.g: {str(['db1bb097-8ffd-49cc-9280-0dc46f854cd7', '137f0642-612b-b4d6-a86f-5a3fff706ede'])}")
+        return None
+    else:
+        # keep unique entries only
+        nsxClusterNodeUUID = set(nsxClusterNodeUUID)
+        if len(nsxClusterNodeUUID) == 0:
+            print(f"ERROR provide a list with NSX Manager Cluster Node UUID to check. E.g: {str(['db1bb097-8ffd-49cc-9280-0dc46f854cd7', '137f0642-612b-b4d6-a86f-5a3fff706ede'])}")
+            return None
+
+    import swagger_client.configuration
+    import swagger_client.rest
+    import swagger_client.api_client
+    from swagger_client.api.system_administration_configuration_nsx_managers_clusters_cluster_status_api import SystemAdministrationConfigurationNSXManagersClustersClusterStatusApi
+   
+    # Configure HTTP basic authorization: BasicAuth
+    configuration = swagger_client.Configuration()
+    configuration.host = f"https://{nsxClusterIP}/api/v1"
+    configuration.username = nsxClusterUser
+    configuration.password = nsxClusterPass
+    configuration.verify_ssl = False
+
+    nsxNodeStatus = dict()
+    for nodeUUID in nsxClusterNodeUUID:
+        print(f"Check NSX Manager Node status: GET '/cluster/nodes/{str(nodeUUID)}/status'\n")
+        # create an instance of the API class
+        APIInstance = swagger_client.SystemAdministrationConfigurationNSXManagersClustersClusterStatusApi(swagger_client.ApiClient(configuration))
+        try:
+            # GET '/cluster/nodes/{node-id}/status'
+            nsxNodeStatus[nodeUUID] = APIInstance.read_cluster_node_status_with_http_info(node_id="db1bb097-8ffd-49cc-9280-0dc46f854cd7")
+            nsxNodeStatusHTTPCode = nsxNodeStatus[nodeUUID][1]
+            nsxNodeStatusOutput = nsxNodeStatus[nodeUUID][0]
+        except Exception as e:
+            print(f"ERROR while trying to GET NSX node {str(nodeUUID)} status: {str(e)}")
+            return None
+        if nsxNodeStatusHTTPCode == 200:
+            print(f"SUCCESS NSX API GET cluster node {str(nodeUUID)} status returned HTTP code: {str(nsxNodeStatusHTTPCode)}")
+        else:
+            print(f"ERROR NSX API GET cluster node {str(nodeUUID)} status returned HTTP code: {str(nsxNodeStatusHTTPCode)}")
+            return None
+
+    # keep node UUID, system_status (cpu_*, disk_*, mem_*, system_time, uptime), version
+    output = {}
+    try:
+        for k, v in nsxNodeStatus.items():
+            if k not in output.keys():
+                output[k] = dict()
+                output[k]["node_uuid"] = k
+                output[k]["ipv4"] =  nsxNodeUUID2IP[k]["IPv4"]
+                output[k]["fqdn"] =  nsxNodeUUID2IP[k]["FQDN"]
+                output[k]["version"] = v[0].version
+                output[k]["system_status"] = dict()
+                output[k]["system_status"]["cpu_cores"] = v[0].system_status.cpu_cores
+                output[k]["system_status"]["disk_space_total"] = v[0].system_status.disk_space_total
+                output[k]["system_status"]["disk_space_used"] = v[0].system_status.disk_space_used
+                output[k]["system_status"]["mem_cache"] = v[0].system_status.mem_cache
+                output[k]["system_status"]["mem_total"] = v[0].system_status.mem_total
+                output[k]["system_status"]["mem_used"] = v[0].system_status.mem_used
+                output[k]["system_status"]["uptime"] = v[0].system_status.uptime
+    except Exception as e:
+        print(f"ERROR while trying to GET NSX nodes {str(nsxClusterNodeUUID)} status: {str(e)}")
+        return None
+
+    return output
+
 def f_check_nsx_cluster_status(nsxClusterIP: str = None, nsxClusterUser: str = None, nsxClusterPass: str = None) -> dict:
     '''
         Return NSX Manager cluster status

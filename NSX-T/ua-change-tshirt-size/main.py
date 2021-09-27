@@ -7,7 +7,7 @@ workflow manager in python
 import argparse, os, sys, subprocess
 from pprint import pprint
 
-from python.functions.nsx import f_check_nsx_cluster_status, f_check_nsx_backup_status, f_do_nsx_backup, f_add_vm_nsx_cluster, f_remove_vm_nsx_cluster
+from python.functions.nsx import f_check_nsx_nodes_status, f_check_nsx_cluster_status, f_check_nsx_backup_status, f_do_nsx_backup, f_add_vm_nsx_cluster, f_remove_vm_nsx_cluster
 from python.functions.vc import f_check_vc_reachability
 from python.functions.variables import f_check_env_variables
 from python.functions.init import f_terraform_init, f_python_init
@@ -41,10 +41,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="""
     This script guides you through the available options of the NSX ua-change-tshirt-size recipe.
     """, usage='Use "%(prog)s --help" for more information', formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument("--action", default=None, type=str, choices=["Python_INIT", "Terraform_INIT", "CHECK", "NSX_CLUSTER_STATUS", "PLAN_NEW_NSX_VM", "DEPLOY_NEW_NSX_VM", "DESTROY_NEW_NSX_VM", "ADD_NEW_NSX_VM_TO_CLUSTER", "REMOVE_NEW_NSX_VM_FROM_CLUSTER", "REMOVE_OLD_NSX_VM_FROM_CLUSTER"], help='''\
+    parser.add_argument("--action", default=None, type=str, choices=["Python_INIT", "Terraform_INIT", "CHECK", "NSX_NODES_STATUS", "NSX_CLUSTER_STATUS", "PLAN_NEW_NSX_VM", "DEPLOY_NEW_NSX_VM", "DESTROY_NEW_NSX_VM", "ADD_NEW_NSX_VM_TO_CLUSTER", "REMOVE_NEW_NSX_VM_FROM_CLUSTER", "REMOVE_OLD_NSX_VM_FROM_CLUSTER"], help='''\
         Python_INIT: Downloads the NSX OpenAPI schema from the existing NSX cluster; Generates NSX API Python bindings. No changes are made on the infrastructure!
         Terraform_INIT: "terraform init". No changes are made on the infrastructure!
         CHECK: Checks VC connectivity and authentication; Checks the NSX Manager cluster status; Checks if NSX Backup is configured and healthy. No changes are made on the infrastructure!
+        NSX_NODES_STATUS: Shows NSX Manager Nodes status. No changes are made on the infrastructure!
         NSX_CLUSTER_STATUS: Shows NSX Manager Cluster status. No changes are made on the infrastructure!
         PLAN_NEW_NSX_VM: Plans the new NSX Manager VM(s) deployment. The planning is done using Terraform (plan), run Terraform_INIT before. No changes are made on the infrastructure!
         DEPLOY_NEW_NSX_VM: Deploys the new NSX Manager VM(s). The deployment is done using Terraform (apply), run Terraform_INIT before. Changes are made on the infrastructure!
@@ -110,6 +111,12 @@ if __name__ == "__main__":
         pprint(f_check_nsx_backup_status(nsxClusterIP = nsxClusterIP, nsxClusterUser = nsxClusterUser, nsxClusterPass = nsxClusterPass))
         # functions/vc.py
         print(f_check_vc_reachability(vcIP = vcIP, vcUser = vcUser, vcPass = vcPass))
+
+    # requires Python_INIT
+    if args.action == "NSX_NODES_STATUS":
+        print("Working ...\n")
+        # functions/nsx.py
+        pprint(f_check_nsx_nodes_status(nsxClusterIP = nsxClusterIP, nsxClusterUser = nsxClusterUser, nsxClusterPass = nsxClusterPass, nsxClusterNodeUUID = None))
 
     # requires Python_INIT
     if args.action == "NSX_CLUSTER_STATUS":
