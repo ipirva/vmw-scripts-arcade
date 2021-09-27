@@ -415,6 +415,8 @@ def f_remove_vm_nsx_cluster(nsxVMIP: list = None, nsxNewVM: list = None, nsxKeep
         nsxNewVMIPList = set()
         
         nsxKeepVMIPList = set()
+        nsxExistingVMIP = set()
+
         # move forward only if the cluster status is STABLE
         if nsxClusterStatusOverall != "STABLE":
             print(f"ERROR NSX Manager cluster ID {nsxClusterID} overall status must be STABLE, and not {nsxClusterStatusOverall}")
@@ -436,6 +438,9 @@ def f_remove_vm_nsx_cluster(nsxVMIP: list = None, nsxNewVM: list = None, nsxKeep
 
             for item in nsxClusterMembers:
                 nsxVMIPv4Val, nsxVMHostnameVal, nsxVMUUIDVal = item
+                # capture the existing NSX Manager VM IPv4
+                if nsxVMIPv4Val not in nsxNewVMIPList:
+                    nsxExistingVMIP.add(nsxVMIPv4Val)
                 if nsxVMIPv4Val not in nsxNewVMIPList and nsxVMIPv4Val not in nsxKeepVMIPList:
                     nsxVMUUID2Remove.append(nsxVMUUIDVal)
                     nsxVMUUID2IP[nsxVMUUIDVal] = nsxVMIPv4Val
@@ -443,6 +448,12 @@ def f_remove_vm_nsx_cluster(nsxVMIP: list = None, nsxNewVM: list = None, nsxKeep
             pprint(f"ERROR cannot determine node UUID for the old NSX Manager VMs while reading {nsxClusterMembers}: {str(e)}")
             return None
         
+        # check that the nsxKeepVMIPList is part of the nsxExistingVMIP
+        # if len(nsxKeepVMIPList) == 0 issubset would return True
+        if nsxKeepVMIPList.issubset(nsxExistingVMIP) is False and len(nsxKeepVMIPList) > 0:
+            pprint(f"ERROR check that the IPv4 of the NSX Manager VMs chosen to be kept are correct: {str(nsxKeepVMIPList)}. The values must be part of: {str(nsxExistingVMIP)}")
+            return None
+
         if len(nsxVMUUID2Remove) == 0:
             pprint(f"INFO There are no NSX Manager VM chosen to be removed from the cluster. VMs chosen to be kept: {str(nsxKeepVM)} VMs deployed: {str(nsxClusterMembers)}")
             return None
