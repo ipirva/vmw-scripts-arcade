@@ -4,7 +4,7 @@ Ionut Pirva
 September 2021
 '''
 
-import sys, subprocess
+import sys, subprocess, time
 from pprint import pprint
 
 from python.functions.variables import f_check_env_variables
@@ -405,7 +405,7 @@ def f_add_vm_nsx_cluster(nsxNewVMIP: str = None, nsxClusterIP: str = None, nsxCl
         print(f"SUCCESS NSX API POST add NSX Manager VM {nsxNewVMIP} to NSX Manager {nsxClusterIP} cluster ID {nsxClusterID} returned HTTP code: {str(nsxVMJoinClusterHTTPCode)}")
         newVMJoined = False
         for i in nsxVMJoinClusterOutput.nodes:
-            if nsxNewVM in (i.entities[0].fqdn, i.entities[0].ip_address):
+            if nsxNewVMIP in (i.entities[0].fqdn, i.entities[0].ip_address):
                 if i.status == "JOINED":
                     print(f"SUCCESS NSX Manager VM {nsxNewVMIP} joined NSX Manager {nsxClusterIP} cluster ID {nsxClusterID}")
                     newVMJoined = True
@@ -415,8 +415,8 @@ def f_add_vm_nsx_cluster(nsxNewVMIP: str = None, nsxClusterIP: str = None, nsxCl
         print(f"ERROR NSX API POST add NSX Manager VM {nsxNewVMIP} to NSX Manager {nsxClusterIP} cluster ID {nsxClusterID} returned HTTP code: {str(nsxVMJoinClusterHTTPCode)}")
         return None
     
-    # terminate loop after 5 minutes
-    whileLoopTerminate = 5*60 # seconds
+    # terminate loop after 15 minutes
+    whileLoopTerminate = 15*60 # seconds
     whileLoopSleep = 10 # seconds
     whileLoopCounter = 0
     while True:
