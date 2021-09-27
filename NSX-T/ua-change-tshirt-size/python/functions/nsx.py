@@ -442,6 +442,11 @@ def f_remove_vm_nsx_cluster(nsxVMIP: list = None, nsxNewVM: list = None, nsxKeep
         except Exception as e:
             pprint(f"ERROR cannot determine node UUID for the old NSX Manager VMs while reading {nsxClusterMembers}: {str(e)}")
             return None
+        
+        if len(nsxVMUUID2Remove) == 0:
+            pprint(f"INFO There are no NSX Manager VM chosen to be removed from the cluster. VMs chosen to be kept: {str(nsxKeepVM)} VMs deployed: {str(nsxClusterMembers)}")
+            return None
+
 
     # Configure HTTP basic authorization: BasicAuth
     configuration = swagger_client.Configuration()
